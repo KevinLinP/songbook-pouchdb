@@ -1,4 +1,5 @@
 <script>
+  import { fade } from 'svelte/transition';
   import PouchDB from 'pouchdb-browser'
   import PouchDBFind from 'pouchdb-find'
   PouchDB.plugin(PouchDBFind)
@@ -8,9 +9,14 @@
   export let params = {}
   let songs = []
   let song = null
-  let loading = true
+  let loading = false
 
   const db = new PouchDB('pages')
+  db.info().then((info) => {
+    if (info.doc_count === 0) {
+      loading = true
+    }
+  })
   db.createIndex({index: {fields: ['slug']}})
 
   const remoteDb = new PouchDB('http://localhost:5984/pages')
@@ -59,7 +65,7 @@
     <Song song={song}/>
   {:else}
     {#if loading}
-      <span class="text-muted">loading ...</span>
+      <span class="text-muted" in:fade>loading ...</span>
     {/if}
   {/if}
 {:else}
