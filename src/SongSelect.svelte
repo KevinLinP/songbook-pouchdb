@@ -2,7 +2,7 @@
   import {push} from 'svelte-spa-router'
   import Select from 'svelte-select'
   
-  export let songs
+  export let songOptions
   let selectOptions = [{title: 'loading ...', loading: true}]
   const staticOptions = [
     {title: 'Home', route: '/', icon: '🏠'}
@@ -22,7 +22,7 @@
       }
 
       if (option.icon) {
-        html = `<div class="d-flex justify-content-between"><div>${html}</div><div>${option.icon}</div></div>`
+        html = `<div class="d-flex justify-content-between"><div>${html}</div><div style="filter: saturate(0);">${option.icon}</div></div>`
       }
 
       return html
@@ -31,8 +31,8 @@
 
   let selectedValue = null;
 
-  $: if (songs.length > 0) {
-    selectOptions = staticOptions.concat(songs)
+  $: if (songOptions.length > 0) {
+    selectOptions = staticOptions.concat(songOptions)
   }
 
   $: if (selectedValue) {
