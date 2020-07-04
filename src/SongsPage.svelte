@@ -1,35 +1,28 @@
 <script>
+  import _ from 'lodash'
   import { fade } from 'svelte/transition';
   import PouchDB from 'pouchdb-browser'
-  import PouchDBAdapterMemory from 'pouchdb-adapter-memory'
-  PouchDB.plugin(PouchDBAdapterMemory)
-  import PouchDBFind from 'pouchdb-find'
-  PouchDB.plugin(PouchDBFind)
   import SongSelect from './SongSelect.svelte'
   import Song from './Song.svelte'
+  import { params } from 'svelte-hash-router'
 
-  export let params = {}
-  let songs = []
+  let songs = {}
   let song = null
   let loading = false
 
-  const db = new PouchDB('pages', {adapter: 'memory'})
-  db.createIndex({index: {fields: ['slug']}})
-  const persistedDb = new PouchDB('pages')
+  const db = new PouchDB('pages')
   const remoteDb = new PouchDB('http://localhost:5984/pages')
 
-  persistedDb.info().then((info) => {
+  db.info().then((info) => {
     if (info.doc_count === 0) {
       loading = true
     }
   })
-	persistedDb.replicate.to(db, {live: true}).on('change', () => {
-    loadSong(params.slug)
-    loadSongs()
-  })
-	persistedDb.replicate.from(remoteDb).on('complete', async () => {
+	db.replicate.from(remoteDb).on('complete', async () => {
     // TODO: think about this
     loading = false
+    loadSongs()
+    loadSong()
   })
 
 	async function loadSongs() {
@@ -38,32 +31,34 @@
     })
 
     songs = allDocs.rows.reduce((acc, result) => {
-      if (result.doc.slug) {
-        acc.push(result.doc)
+      const doc = result.doc
+      const slug = doc.slug
+      if (slug) {
+        acc[slug] = doc
       }
       return acc
-    }, [])
+    }, {})
+    console.log(songs)
   }
   loadSongs()
 
   async function loadSong(slug) {
     if (slug) {
-      db.explain({selector: {slug}}).then((result) => console.log(result))
-      const result = await db.find({selector: {slug}})
-      song = result.docs[0]
+      song = songs[slug]
     } else {
       song = null
     }
   }
   
-  $: loadSong(params.slug)
+  $: songValues = _.values(songs)
+  $: loadSong($params.slug)
 </script>
 
 <div class="my-3">
-  <SongSelect {songs}/>
+  <SongSelect songs={songValues}/>
 </div>
 
-{#if params.slug}
+{#if $params.slug}
   {#if song}
     <Song song={song}/>
   {:else}

@@ -1,13 +1,7 @@
 <script>
-	import Router from 'svelte-spa-router'
-	import SongsPage from './SongsPage.svelte'
-
-	const routes = {
-		'/': SongsPage,
-		'/:slug': SongsPage,
-	}
+	import { Router } from 'svelte-hash-router'
 </script>
 
 <div class="container">
-	<Router {routes}/>
+	<Router/>
 </div>
