@@ -1,0 +1,7 @@
+.password
+
+.DS_Store
+node_modules
+public/bundle.*
+package-lock.json
+yarn.lock
