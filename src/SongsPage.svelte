@@ -1,6 +1,8 @@
 <script>
   import { fade } from 'svelte/transition';
   import PouchDB from 'pouchdb-browser'
+  import PouchDBAdapterMemory from 'pouchdb-adapter-memory'
+  PouchDB.plugin(PouchDBAdapterMemory)
   import PouchDBFind from 'pouchdb-find'
   PouchDB.plugin(PouchDBFind)
   import SongSelect from './SongSelect.svelte'
@@ -11,21 +13,26 @@
   let song = null
   let loading = false
 
-  const db = new PouchDB('pages')
-  db.info().then((info) => {
+  const db = new PouchDB('pages', {adapter: 'memory'})
+  db.createIndex({index: {fields: ['slug']}})
+  const persistedDb = new PouchDB('pages')
+  const remoteDb = new PouchDB('http://localhost:5984/pages')
+
+  persistedDb.info().then((info) => {
     if (info.doc_count === 0) {
       loading = true
     }
   })
-  db.createIndex({index: {fields: ['slug']}})
-
-  const remoteDb = new PouchDB('http://localhost:5984/pages')
-	db.replicate.from(remoteDb).on('complete', async () => {
-    await loadSong()
-    await loadSongs()
+	db.replicate.from(persistedDb, {live: true}).on('change', () => {
+    loadSong()
+    loadSongs()
+  })
+	persistedDb.replicate.from(remoteDb).on('complete', async () => {
+    // TODO: think about this
     loading = false
   })
-  
+
+
 	async function loadSongs() {
     const allDocs = await db.allDocs({
       include_docs: true
