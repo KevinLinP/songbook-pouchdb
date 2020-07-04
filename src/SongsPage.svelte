@@ -1,16 +1,27 @@
 <script>
+  import PouchDB from 'pouchdb-browser'
+  import PouchDBFind from 'pouchdb-find'
+  PouchDB.plugin(PouchDBFind)
   import SongSelect from './SongSelect.svelte'
   import Song from './Song.svelte'
-  import db from './db.js'
-  
+
   export let params = {}
   let songs = []
   let song = null
 
-	async function refresh() {
+  const db = new PouchDB('pages')
+  db.createIndex({index: {fields: ['slug']}})
+
+  const remoteDb = new PouchDB('http://localhost:5984/pages')
+	db.replicate.from(remoteDb).on('complete', () => {
+    loadSongs()
+  })
+  
+	async function loadSongs() {
     const allDocs = await db.allDocs({
       include_docs: true
     })
+
     songs = allDocs.rows.reduce((acc, result) => {
       if (result.doc.slug) {
         acc.push(result.doc)
@@ -18,7 +29,7 @@
       return acc
     }, [])
   }
-	refresh()
+  loadSongs()
 
   $: currentSongId = params.songId
   $: {
