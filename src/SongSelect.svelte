@@ -15,10 +15,15 @@
 
   let selectedValue = null;
 
+  $: selectOptions = [{title: 'Home', route: '/'}].concat(songs)
   $: if (selectedValue) {
-    push(`/${selectedValue.slug}`)
+    if (selectedValue.slug) {
+      push(`/${selectedValue.slug}`)
+    } else {
+      push(selectedValue.route)
+    }
     selectedValue = null
   }
 </script>
 
-<Select items={songs} {...selectProps} bind:selectedValue></Select>
+<Select items={selectOptions} {...selectProps} bind:selectedValue></Select>

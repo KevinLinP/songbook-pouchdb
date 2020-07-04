@@ -8,4 +8,6 @@
 	}
 </script>
 
-<Router {routes}/>
+<div class="container">
+	<Router {routes}/>
+</div>
