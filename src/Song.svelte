@@ -3,7 +3,7 @@
 </script>
 
 <header class="mt-4 mb-4">
-  <h1 class="display-5">{ song.title }</h1>
+  <h1 class="display-6">{ song.title }</h1>
   {#if song.tune}
     <p class="text-muted">tune: {song.tune}</p>
   {/if}

@@ -1,16 +1,9 @@
 <script>
-  import PouchDB from 'pouchdb-browser'
   import SongSelect from './SongSelect.svelte'
   import Song from './Song.svelte'
+  import db from './db.js'
   
   export let params = {}
-
-	const db = new PouchDB('songs')
-	const remoteDb = new PouchDB('http://localhost:5984/songs')
-	db.replicate.from(remoteDb).on('complete', () => {
-    refresh()
-  })
-
   let songs = []
   let song = null
 
@@ -18,15 +11,20 @@
     const allDocs = await db.allDocs({
       include_docs: true
     })
-    songs = allDocs.rows.map(row => row.doc)
+    songs = allDocs.rows.reduce((acc, result) => {
+      if (result.doc.slug) {
+        acc.push(result.doc)
+      }
+      return acc
+    }, [])
   }
 	refresh()
 
   $: currentSongId = params.songId
   $: {
     if (currentSongId) {
-      db.get(currentSongId).then((doc) => {
-        song = doc
+      db.find({selector: {slug: currentSongId}}).then((result) => {
+        song = result.docs[0]
       })
     } else {
       song = null

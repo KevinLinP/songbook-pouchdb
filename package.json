@@ -18,9 +18,10 @@
     "dev": "webpack-dev-server --content-base public"
   },
   "dependencies": {
-    "bootstrap": "^4.5.0",
+    "bootstrap": "^5.0.0-alpha1",
     "nano": "^8.2.2",
     "pouchdb-browser": "^7.2.1",
+    "pouchdb-find": "^7.2.1",
     "showdown": "^1.9.1",
     "slugify": "^1.4.4",
     "svelte-select": "^3.8.1",

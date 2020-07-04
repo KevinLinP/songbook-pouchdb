@@ -6,21 +6,14 @@ const slugify = require('slugify')
 
 const converter = new showdown.Converter();
 
-const now = new Date()
 let songsJson = JSON.parse(fs.readFileSync('/Users/kevinlin/code/songbook-scraper/output/songs.json', 'utf8'));
-
 songsJson.forEach((song) => transformSong(song))
 // songsJson = _.uniqBy(songsJson, (s) => s.slug)
 checkSlugsUnique(songsJson)
-
-const password = fs.readFileSync('.password', 'utf8')
-const songsDb = nano.use('songs');
 insertSongs()
 
 function transformSong(song) {
   song.mainContentHtml = converter.makeHtml(song.mainContentMarkdown)
-  song.createdAt = now
-  song.updatedAt = now
   song.slug = slug(song)
   delete song.mainContentMarkdown
 }
@@ -36,27 +29,26 @@ function slug(song) {
 
 function checkSlugsUnique(songs) {
   const slugs = songs.map((s) => s.slug)
-  const uniqueSlugs = _.uniq(slugs)
+  // stolen from https://codehandbook.org/javascript-find-duplicate-values-array/
+  let duplicates = slugs.reduce((acc,currentValue,index, array) => {
+    if(array.indexOf(currentValue)!=index && !acc.includes(currentValue)) acc.push(currentValue);
+    return acc;
+  }, []);
 
-  if (slugs.length !== uniqueSlugs.length) {
-    // stolen from https://codehandbook.org/javascript-find-duplicate-values-array/
-    let duplicates = slugs.reduce((acc,currentValue,index, array) => {
-      if(array.indexOf(currentValue)!=index && !acc.includes(currentValue)) acc.push(currentValue);
-      return acc;
-    }, []);
-
-    console.log(slugs.length, uniqueSlugs.length)
+  if (duplicates.length > 0) {
     console.log(duplicates)
     throw new Error('slugs not unique')
   }
 }
 
 async function insertSongs() {
-  await nano.auth('admin', password)
+  const password = fs.readFileSync('.password', 'utf8')
+  await nano.auth('org.couchdb.user:kevin', password)
   nano.session().then((doc) => console.log(doc))
+  const songsDb = nano.use('pages');
 
   songsJson.forEach(async (song) => {
-    const result = await songsDb.insert(song, song.slug)
+    const result = await songsDb.insert(song)
     console.log(result)
   })
 }
