@@ -2,11 +2,13 @@
   import {push} from 'svelte-spa-router'
   import Select from 'svelte-select'
   
-  export let songOptions
-  let selectOptions = [{title: 'loading ...', loading: true}]
+  export let songs
   const staticOptions = [
     {title: 'Home', route: '/', icon: '🏠'}
   ]
+  let selectOptions = staticOptions.concat([
+    {title: 'Loading ...', loading: true}
+  ])
 
   const selectProps = {
     isVirtualList: true,
@@ -31,7 +33,9 @@
 
   let selectedValue = null;
 
-  $: if (songOptions.length > 0) {
+  $: if (_.keys(songs).length > 0) {
+    let songOptions = _.values(songs)
+    songOptions = _.sortBy(songOptions, ['title'])
     selectOptions = staticOptions.concat(songOptions)
   }
 

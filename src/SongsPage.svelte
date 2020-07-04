@@ -38,22 +38,12 @@
   }
   loadSongs()
 
-  function createSongOptions(songs) {
-    let options = _.reduce(songs, (acc, s) => {
-      acc.push(_.pick(s, ['title', 'slug']))
-      return acc
-    }, [])
-
-    return _.sortBy(options, ['title'])
-  }
-
   $: slug = $params.slug
   $: song = songs[slug]
-  $: songSelectOptions = createSongOptions(songs)
 </script>
 
 <div class="my-3">
-  <SongSelect songOptions={songSelectOptions}/>
+  <SongSelect {songs}/>
 </div>
 
 {#if slug}
