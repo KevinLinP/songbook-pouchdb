@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var OfflinePlugin = require('offline-plugin');
 const path = require('path');
 
 const mode = process.env.NODE_ENV || 'development';
@@ -49,7 +50,8 @@ module.exports = {
 	plugins: [
 		new MiniCssExtractPlugin({
 			filename: '[name].css'
-		})
+		}),
+		new OfflinePlugin(),
 	],
 	devtool: prod ? false: 'source-map'
 };

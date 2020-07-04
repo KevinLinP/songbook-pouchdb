@@ -20,6 +20,7 @@
   "dependencies": {
     "bootstrap": "^5.0.0-alpha1",
     "nano": "^8.2.2",
+    "offline-plugin": "^5.0.7",
     "pouchdb-browser": "^7.2.1",
     "pouchdb-find": "^7.2.1",
     "showdown": "^1.9.1",
