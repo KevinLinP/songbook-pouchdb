@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const fs = require('fs');
 const showdown = require('showdown')
-const nano = require('nano')('http://localhost:5984')
+const nano = require('nano')('https://h3-songbook-couchdb.kevinlinp.org:5984')
 const slugify = require('slugify')
 
 const converter = new showdown.Converter();

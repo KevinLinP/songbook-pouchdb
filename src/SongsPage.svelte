@@ -10,7 +10,7 @@
   let loading = false
 
   const db = new PouchDB('pages')
-  const remoteDb = new PouchDB('http://localhost:5984/pages')
+  const remoteDb = new PouchDB('https://h3-songbook-couchdb.kevinlinp.org:5984/pages')
 
   db.info().then((info) => {
     if (info.doc_count === 0) {
