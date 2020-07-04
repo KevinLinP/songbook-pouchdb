@@ -4,7 +4,7 @@
 
 	const routes = {
 		'/': SongsPage,
-		'/:songId': SongsPage,
+		'/:slug': SongsPage,
 	}
 </script>
 

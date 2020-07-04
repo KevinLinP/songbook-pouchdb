@@ -23,15 +23,14 @@
       loading = true
     }
   })
-	db.replicate.from(persistedDb, {live: true}).on('change', () => {
-    loadSong()
+	persistedDb.replicate.to(db, {live: true}).on('change', () => {
+    loadSong(params.slug)
     loadSongs()
   })
 	persistedDb.replicate.from(remoteDb).on('complete', async () => {
     // TODO: think about this
     loading = false
   })
-
 
 	async function loadSongs() {
     const allDocs = await db.allDocs({
@@ -47,27 +46,24 @@
   }
   loadSongs()
 
-  async function loadSong() {
-    if (currentSongId) {
-      const result = await db.find({selector: {slug: currentSongId}})
+  async function loadSong(slug) {
+    if (slug) {
+      db.explain({selector: {slug}}).then((result) => console.log(result))
+      const result = await db.find({selector: {slug}})
       song = result.docs[0]
     } else {
       song = null
     }
   }
-
-  $: currentSongId = params.songId
-  $: {
-    currentSongId
-    loadSong()
-  }
+  
+  $: loadSong(params.slug)
 </script>
 
 <div class="my-3">
   <SongSelect {songs}/>
 </div>
 
-{#if currentSongId}
+{#if params.slug}
   {#if song}
     <Song song={song}/>
   {:else}
