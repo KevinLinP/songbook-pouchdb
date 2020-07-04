@@ -7,7 +7,6 @@
   import { params } from 'svelte-hash-router'
 
   let songs = {}
-  let song = null
   let loading = false
 
   const db = new PouchDB('pages')
@@ -19,10 +18,8 @@
     }
   })
 	db.replicate.from(remoteDb).on('complete', async () => {
-    // TODO: think about this
     loading = false
     loadSongs()
-    loadSong()
   })
 
 	async function loadSongs() {
@@ -38,27 +35,18 @@
       }
       return acc
     }, {})
-    console.log(songs)
   }
   loadSongs()
 
-  async function loadSong(slug) {
-    if (slug) {
-      song = songs[slug]
-    } else {
-      song = null
-    }
-  }
-  
-  $: songValues = _.values(songs)
-  $: loadSong($params.slug)
+  $: slug = $params.slug
+  $: song = songs[slug]
 </script>
 
 <div class="my-3">
-  <SongSelect songs={songValues}/>
+  <SongSelect songs={_.values(songs)}/>
 </div>
 
-{#if $params.slug}
+{#if slug}
   {#if song}
     <Song song={song}/>
   {:else}

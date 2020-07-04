@@ -4,31 +4,45 @@
   
   export let songs
   let selectOptions = [{title: 'loading ...', loading: true}]
+  const staticOptions = [
+    {title: 'Home', route: '/', icon: '🏠'}
+  ]
 
   const selectProps = {
     isVirtualList: true,
     placeholder: 'Search ...',
     optionIdentifier: '_id',
-    getOptionLabel: (option, filterText) => option.title,
-    getSelectionLabel: (option) => option.title,
     inputStyles: 'font-size: 1rem;',
+    listPlacement: 'bottom',
+    getOptionLabel: (option, filterText) => {
+      let html = option.title
+
+      if (option.loading) {
+        html = `<span class="text-muted">${html}</span>`
+      }
+
+      if (option.icon) {
+        html = `<div class="d-flex justify-content-between"><div>${html}</div><div>${option.icon}</div></div>`
+      }
+
+      return html
+    },
   }
 
   let selectedValue = null;
 
   $: if (songs.length > 0) {
-    selectOptions = [{title: 'Home', route: '/'}].concat(songs)
+    selectOptions = staticOptions.concat(songs)
   }
+
   $: if (selectedValue) {
-    if (selectedValue.loading) {
-      // intentionally blank
-    } else if (selectedValue.slug) {
+    if (selectedValue.slug) {
       push(`/${selectedValue.slug}`)
-      selectedValue = null
-    } else {
+    } else if (selectedValue.route) {
       push(selectedValue.route)
-      selectedValue = null
     }
+
+    selectedValue = null
   }
 </script>
 
