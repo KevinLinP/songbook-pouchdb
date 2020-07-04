@@ -8,13 +8,16 @@
   export let params = {}
   let songs = []
   let song = null
+  let loading = true
 
   const db = new PouchDB('pages')
   db.createIndex({index: {fields: ['slug']}})
 
   const remoteDb = new PouchDB('http://localhost:5984/pages')
-	db.replicate.from(remoteDb).on('complete', () => {
-    loadSongs()
+	db.replicate.from(remoteDb).on('complete', async () => {
+    await loadSong()
+    await loadSongs()
+    loading = false
   })
   
 	async function loadSongs() {
@@ -31,15 +34,19 @@
   }
   loadSongs()
 
-  $: currentSongId = params.songId
-  $: {
+  async function loadSong() {
     if (currentSongId) {
-      db.find({selector: {slug: currentSongId}}).then((result) => {
-        song = result.docs[0]
-      })
+      const result = await db.find({selector: {slug: currentSongId}})
+      song = result.docs[0]
     } else {
       song = null
     }
+  }
+
+  $: currentSongId = params.songId
+  $: {
+    currentSongId
+    loadSong()
   }
 </script>
 
@@ -50,6 +57,10 @@
 {#if currentSongId}
   {#if song}
     <Song song={song}/>
+  {:else}
+    {#if loading}
+      <span class="text-muted">loading ...</span>
+    {/if}
   {/if}
 {:else}
   <header class="mt-4 mb-4">

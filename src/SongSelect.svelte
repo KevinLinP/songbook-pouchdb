@@ -3,6 +3,7 @@
   import Select from 'svelte-select'
   
   export let songs
+  let selectOptions = [{title: 'loading ...', loading: true}]
 
   const selectProps = {
     isVirtualList: true,
@@ -15,14 +16,19 @@
 
   let selectedValue = null;
 
-  $: selectOptions = [{title: 'Home', route: '/'}].concat(songs)
+  $: if (songs.length > 0) {
+    selectOptions = [{title: 'Home', route: '/'}].concat(songs)
+  }
   $: if (selectedValue) {
-    if (selectedValue.slug) {
+    if (selectedValue.loading) {
+      // intentionally blank
+    } else if (selectedValue.slug) {
       push(`/${selectedValue.slug}`)
+      selectedValue = null
     } else {
       push(selectedValue.route)
+      selectedValue = null
     }
-    selectedValue = null
   }
 </script>
 
