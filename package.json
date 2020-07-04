@@ -28,7 +28,6 @@
     "showdown": "^1.9.1",
     "slugify": "^1.4.4",
     "svelte-hash-router": "^1.0.1",
-    "svelte-select": "^3.8.1",
-    "svelte-spa-router": "^2.2.0"
+    "svelte-select": "^3.8.1"
   }
 }

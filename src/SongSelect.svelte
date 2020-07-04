@@ -1,5 +1,4 @@
 <script>
-  import {push} from 'svelte-spa-router'
   import Select from 'svelte-select'
   
   export let songs
@@ -41,9 +40,9 @@
 
   $: if (selectedValue) {
     if (selectedValue.slug) {
-      push(`/${selectedValue.slug}`)
+      window.location.href = `/#/${selectedValue.slug}`
     } else if (selectedValue.route) {
-      push(selectedValue.route)
+      window.location.href = `/#${selectedValue.route}`
     }
 
     selectedValue = null
