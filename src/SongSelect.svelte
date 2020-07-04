@@ -1,5 +1,5 @@
 <script>
-  // import { navigateTo } from 'svelte-router-spa'
+  import {push} from 'svelte-spa-router'
   import Select from 'svelte-select'
   
   export let songs
@@ -16,7 +16,7 @@
   let selectedValue = null;
 
   $: if (selectedValue) {
-    // navigateTo(`/s/${selectedValue._id}`)
+    push(`/${selectedValue.slug}`)
     selectedValue = null
   }
 </script>

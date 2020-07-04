@@ -2,12 +2,15 @@
   import PouchDB from 'pouchdb-browser'
   import SongSelect from './SongSelect.svelte'
   import Song from './Song.svelte'
+  
+  export let params = {}
 
-	const db = new PouchDB('songs');
-	const remoteDb = new PouchDB('http://localhost:5984/songs');
-	db.replicate.from(remoteDb)
+	const db = new PouchDB('songs')
+	const remoteDb = new PouchDB('http://localhost:5984/songs')
+	db.replicate.from(remoteDb).on('complete', () => {
+    refresh()
+  })
 
-  let currentSongId
   let songs = []
   let song = null
 
@@ -15,10 +18,20 @@
     const allDocs = await db.allDocs({
       include_docs: true
     })
-		songs = allDocs.rows.map(row => row.doc)
-	}
-
+    songs = allDocs.rows.map(row => row.doc)
+  }
 	refresh()
+
+  $: currentSongId = params.songId
+  $: {
+    if (currentSongId) {
+      db.get(currentSongId).then((doc) => {
+        song = doc
+      })
+    } else {
+      song = null
+    }
+  }
 </script>
 
 <div class="my-3">
@@ -26,8 +39,8 @@
 </div>
 
 {#if currentSongId}
-  {#if $song}
-    <Song song={$song}/>
+  {#if song}
+    <Song song={song}/>
   {/if}
 {:else}
   <header class="mt-4 mb-4">

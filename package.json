@@ -21,6 +21,8 @@
     "nano": "^8.2.2",
     "pouchdb-browser": "^7.2.1",
     "showdown": "^1.9.1",
-    "svelte-select": "^3.8.1"
+    "slugify": "^1.4.4",
+    "svelte-select": "^3.8.1",
+    "svelte-spa-router": "^2.2.0"
   }
 }
